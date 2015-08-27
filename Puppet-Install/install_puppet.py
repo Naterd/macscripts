@@ -12,7 +12,6 @@ import re
 
 parser = argparse.ArgumentParser(description='Installs and configures Puppet on OS X')
 parser.add_argument('--server', help='The URL of the Puppet Server. Defaults to puppet')
-parser.add_argument('--environment', help='Which environment to add the agent to (Engineering, Production, Test)')
 
 args = vars(parser.parse_args())
 
@@ -21,10 +20,7 @@ if args['server']:
 else:
     puppetserver = 'puppet'
 
-if args['environment']:
-    environment = args['environment']
-else:
-    environment = 'production'
+environment = 'production'
 
 
 def downloadChunks(url):
@@ -139,6 +135,23 @@ if internet_on:
     p=subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     p.wait()
     time.sleep(20)
+
+    print "Downloading Xcode commandline tools"
+    the_dmg = downloadChunks("http://sj-munki/downloads/Xcode_6.4.dmg")
+    ##mount the dmg
+    print "Mounting Xcode DMG"
+    the_command = "/usr/bin/hdiutil attach "+the_dmg
+    p=subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p.wait()
+    time.sleep(10)
+
+    print "Installing Xcode commandline tools"
+    the_command = "/usr/sbin/installer -pkg \"/Volumes/Command Line Developer Tools/Command Line Tools (OS X 10.10).pkg\" -target /"
+    p=subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p.wait()
+    time.sleep(10)
+
+
     print "Ejecting Puppet"
     the_command = "hdiutil eject /Volumes/puppet-3.8.2"
     subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0]
@@ -150,6 +163,11 @@ if internet_on:
     print "Ejecting Hiera"
     the_command = "hdiutil eject /Volumes/hiera-1.3.4"
     subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0]
+
+    print "Ejecting Xcode"
+    the_command = "hdiutil eject \"/Volumes/Command Line Developer Tools\""
+    subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0]
+
 
     print 'Installing CFPropertyList gem'
     the_command = '/usr/bin/gem install CFPropertyList'
