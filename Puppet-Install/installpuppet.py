@@ -22,6 +22,16 @@ else:
 
 environment = 'production'
 
+computername = raw_input('Enter desired computername or enter (skip) if you do not need to set computername: ')
+
+if computername!='skip':
+    the_command = "scutil --set ComputerName "+computername
+    p=subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p.wait()
+    the_command = "scutil --set HostName "+computername
+    p=subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p.wait()
+
 
 def downloadChunks(url):
     """Helper to download large files
