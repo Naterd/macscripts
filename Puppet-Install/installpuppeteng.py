@@ -20,7 +20,7 @@ if args['server']:
 else:
     puppetserver = 'puppet'
 
-environment = 'production'
+environment = 'engineering'
 
 
 def downloadChunks(url):
@@ -179,7 +179,7 @@ if internet_on:
     p=subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     p.wait()
 
-    data = "[main]\npluginsync=true\nssldir=/var/lib/puppet/ssl\n\n[master]\nenvironment="+environment+"\npluginsync=true\n\n[agent]\nreport=true\npluginsync=true"
+    data = "[main]\npluginsync=true\nssldir=/var/lib/puppet/ssl\n\n[master]\npluginsync=true\n\n[agent]\nenvironment="+environment+"\nreport=true\npluginsync=true"
     the_command = "/usr/bin/touch /etc/puppet/puppet.conf"
     p=subprocess.Popen(the_command,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
